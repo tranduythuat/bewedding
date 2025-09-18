@@ -1,0 +1,48 @@
+services:
+  php:
+    image: ghcr.io/sylius/sylius-php:8.3-alpine
+    container_name: sylius-php
+    volumes:
+       - ./sylius:/srv/sylius
+       - ./docker/php/conf.d//custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.4
+    platform: linux/amd64
+    container_name: sylius-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 3s
+      interval: 5s
+      retries: 10
+    volumes:
+      - db_data:/var/lib/mysql
+
+  nginx:
+    image: ghcr.io/sylius/sylius-nginx:latest
+    container_name: sylius-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - php
+  node:
+    image: node:20-alpine
+    working_dir: /srv/sylius
+    volumes:
+      - ./sylius:/srv/sylius
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: sylius-mailhog
+    ports:
+      - "8025:8025"
+
+volumes:
+  db_data: {}
+
