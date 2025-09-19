@@ -13,8 +13,6 @@ services:
       - mysql
 
   nginx:
-    image: nginx:1.25
-    container_name: sylius-nginx
     ports:
       - "80:80"
       - "443:443"

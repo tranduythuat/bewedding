@@ -7,16 +7,15 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./sylius:/srv/sylius:cached
-      - ./docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     working_dir: /srv/sylius
+    ports:
+      - "9000:9000"
     env_file:
       - .env
       - .env.dev
-    depends_on:
-      - mysql
 
   nginx:
-    image: nginx:1.25
+    image: nginx:1.21-alpine
     container_name: sylius-nginx
     ports:
       - "80:80"
